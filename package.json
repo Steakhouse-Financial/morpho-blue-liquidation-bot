@@ -11,7 +11,8 @@
     "test:helpers": "vitest helpers",
     "build:config": "pnpm --filter @morpho-blue-liquidation-bot/config build",
     "deploy:executor": "pnpm build:config && tsx apps/client/src/deployExecutor.ts",
-    "liquidate": "pnpm build:config && tsx apps/client/src/script.ts --env-file=.env"
+    "liquidate": "pnpm build:config && tsx apps/client/src/script.ts --env-file=.env",
+    "liquidate:docker": "pnpm build:config && tsx apps/client/src/script.ts"
   },
   "lint-staged": {
     "*.ts": [

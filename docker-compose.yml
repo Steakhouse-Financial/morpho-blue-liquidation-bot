@@ -1,18 +1,35 @@
-version: "3.8"
-
 services:
   postgres:
     image: postgres:17
-    container_name: morpho_blue_liquidation_bot_postgres
+    container_name: morpho-liquidation-bot-postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: ponder
       POSTGRES_PASSWORD: ponder
       POSTGRES_DB: ponder
-    ports:
-      - "5432:5432"
+    # ports:
+    #   - "5432:5432"
     volumes:
-      - morpho_blue_liquidation_bot_postgres:/var/lib/postgres/data
+      - ./data/db:/var/lib/postgres/data
+    networks:
+      - bot-network
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: morpho-liquidation-bot
+    command: ["pnpm", "liquidate:docker"]
+    env_file:
+      - .env
+    environment:
+      # Override POSTGRES_DATABASE_URL to use the service defined in this compose file
+      - POSTGRES_DATABASE_URL=postgresql://ponder:ponder@postgres:5432/ponder
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    networks:
+      - bot-network
 
-volumes:
-  morpho_blue_liquidation_bot_postgres:
+networks:
+  bot-network:
+    driver: bridge
